@@ -33,6 +33,7 @@ public class MazeLevel implements KeyListener {
 		player = maze.getPlayer();
 		
 		printScreen();
+		
 	}
 	
 	public void printScreen(){
@@ -82,7 +83,6 @@ public class MazeLevel implements KeyListener {
 			}
 		}
 		
-		
 		game.getContext().setText(screenString);
 	}
 	
@@ -110,8 +110,12 @@ public class MazeLevel implements KeyListener {
 		}else if(key.getKeyChar() == 'q'){
 			game.getContext().removeKeyListener(this);
 			game.previousMazeLevel();
-			printScreen();
 		}else if(key.getKeyChar() == 'e'){
+			game.getContext().removeKeyListener(this);
+			game.nextMazeLevel();
+		}
+		
+		if(player.getPos().equals(maze.getExit())){
 			game.getContext().removeKeyListener(this);
 			game.nextMazeLevel();
 		}

@@ -38,7 +38,7 @@ public class Game implements KeyListener {
 	
 	public void startMazeLevel(int mazeNumber){
 		 MazeLevel level = new MazeLevel(this, mazeFileArray[mazeNumber]);
-		 System.out.println("Current Map is: " + mazeNumber);
+		 System.out.println("Current Maze is: " + mazeNumber);
 	}
 	
 	public void getMazeFiles(){
@@ -47,7 +47,7 @@ public class Game implements KeyListener {
 	}
 	
 	public void previousMazeLevel(){
-		if(mazeNumber - 1 > 0){
+		if(mazeNumber - 1 >= 0){
 			this.mazeNumber--;
 			startMazeLevel(mazeNumber);
 		}
@@ -86,6 +86,7 @@ public class Game implements KeyListener {
 	public void keyReleased(KeyEvent key) {
 		// Handle user input
 		if(Character.toLowerCase(key.getKeyChar()) == 'g'){
+			this.mazeNumber = 0;
 			startMazeLevel(mazeNumber);
 		}
 	}
