@@ -102,19 +102,25 @@ public class MazeLevel implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent key) {
+		boolean playerMoved = false;
+		
 		// Handle user input
 		if(key.getKeyChar() == 'w'){
 			player.move(0, -1);
 			printScreen();
+			playerMoved = true;
 		}else if(key.getKeyChar() == 'a'){
 			player.move(-1, 0);
 			printScreen();
+			playerMoved = true;
 		}else if(key.getKeyChar() == 's'){
 			player.move(0, 1);
 			printScreen();
+			playerMoved = true;
 		}else if(key.getKeyChar() == 'd'){
 			player.move(1, 0);
 			printScreen();
+			playerMoved = true;
 		}else if(key.getKeyChar() == 'q'){
 			game.getContext().removeKeyListener(this);
 			game.previousMazeLevel();
@@ -123,12 +129,14 @@ public class MazeLevel implements KeyListener {
 			game.nextMazeLevel();
 		}
 		
-		if(player.getPos().equals(maze.getExit())){
-			game.getContext().removeKeyListener(this);
-			game.nextMazeLevel();
-		}else if(maze.isEncounter(player.getPos())){
-			game.getContext().removeKeyListener(this);
-			game.startEncounterLevel();
+		if(playerMoved){
+			if(player.getPos().equals(maze.getExit())){
+				game.getContext().removeKeyListener(this);
+				game.nextMazeLevel();
+			}else if(maze.isEncounter(player.getPos())){
+				game.getContext().removeKeyListener(this);
+				game.startEncounterLevel();
+			}
 		}
 	}
 
