@@ -15,7 +15,7 @@ public class Game implements KeyListener {
 	
 	public Game(){
 		
-		JFrame frame = new JFrame("HelloWorldSwing");
+		JFrame frame = new JFrame("MazeGame");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(800, 530));
 		
@@ -40,10 +40,6 @@ public class Game implements KeyListener {
 	public void printScreen(){
 		
 		String screenString = "";
-		
-//		for(int i = 0; i <= 100; i++){
-//			println("");
-//		}
 		
 		for(int y = 0; y < maze.getLengthY(); y++){
 			for(int x = 0; x < maze.getLengthX(); x++){
@@ -90,6 +86,12 @@ public class Game implements KeyListener {
 			printScreen();
 		}else if(key.getKeyChar() == 'd'){
 			player.move(1, 0);
+			printScreen();
+		}else if(key.getKeyChar() == 'q'){
+			maze.previousMap();
+			printScreen();
+		}else if(key.getKeyChar() == 'e'){
+			maze.nextMap();
 			printScreen();
 		}
 		

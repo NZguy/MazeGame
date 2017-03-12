@@ -4,30 +4,41 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Maze {
 	
-	private int[][] mapArray;
+	private File[] mapFileArray;
+	private int currentFile;
+	private ArrayList<ArrayList<Integer>> mapArray;
 	private int mapLengthX;
 	private int mapLengthY;
 	
 	
 	public Maze(){
 		
-		mapArray = buildMap();
-		mapLengthY = mapArray.length;
-		mapLengthX = mapArray[0].length;
+		getMapFiles();
+		currentFile = 0;
+		
+		buildMap();
 		
 	}
 	
-	public int[][] buildMap(){
+	public void getMapFiles(){
+		File folder = new File("maps");
+		mapFileArray = folder.listFiles();
+	}
+	
+	public void buildMap(){
+		
+		System.out.println("Current Map is: " + currentFile);
 		
 		ArrayList<ArrayList<Integer>> mapLoadingArray = new ArrayList<ArrayList<Integer>>();
 		
 		try {
 			
-			File mapFile = new File("map/map1.txt");
+			File mapFile = mapFileArray[currentFile];
 			Scanner mapScanner = new Scanner(mapFile);
 			
 			while(mapScanner.hasNextLine()){
@@ -36,7 +47,7 @@ public class Maze {
 				ArrayList<Integer> mapLineArray = new ArrayList<Integer>();
 				for(int x = 0; x < mapLine.length(); x++){
 					// Get character at x, convert it to a string, convert that string to an int
-					mapLineArray.set(x, Integer.parseInt(String.valueOf(mapLine.charAt(x)))); 
+					mapLineArray.add(Integer.parseInt(String.valueOf(mapLine.charAt(x)))); 
 				}
 				mapLoadingArray.add(mapLineArray);
 				
@@ -46,25 +57,41 @@ public class Maze {
 			e.printStackTrace();
 		}
 		
+		mapLengthY = mapLoadingArray.size();
+		mapLengthX = mapLoadingArray.get(0).size();
 		
-		int[][] map = {
-				{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-				{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-				{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-				{1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1},
-				{1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1},
-				{1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1},
-				{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-				{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-				{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
+		this.mapArray = mapLoadingArray;
 		
-		return map;
-		
+	}
+	
+	public int numberOfMaps(){
+		return mapFileArray.length;
+	}
+	
+	public void setCurrentMap(int mapNumber){
+		if(mapNumber >= 0 && mapNumber < numberOfMaps()){
+			this.currentFile = mapNumber;
+			buildMap();
+		}
+	}
+	
+	public void nextMap(){
+		if((currentFile + 1) < numberOfMaps()){
+			this.currentFile++;
+			buildMap();
+		}
+	}
+	
+	public void previousMap(){
+		if((currentFile - 1) >= 0){
+			this.currentFile--;
+			buildMap();
+		}
 	}
 	
 	public boolean isOpen(int x, int y){
 		
-		return (this.mapArray[y][x] == 0);
+		return (this.mapArray.get(y).get(x) == 0);
 		
 	}
 	
