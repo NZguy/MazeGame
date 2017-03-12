@@ -9,62 +9,48 @@ import java.util.Scanner;
 
 public class Maze {
 	
-	private File[] mapFileArray;
-	private int currentFile;
-	private ArrayList<ArrayList<Integer>> mapArray;
-	private int mapLengthX;
-	private int mapLengthY;
+	private ArrayList<ArrayList<Integer>> mazeArray;
+	private int mazeLengthX;
+	private int mazeLengthY;
 	
 	private Player player;
-	private Coord mapEntrance;
-	private Coord mapExit;
+	private Coord mazeEntrance;
+	private Coord mazeExit;
+	private File mazeFile;
 	
-	
-	public Maze(){
-		
-		getMapFiles();
-		currentFile = 0;
+	public Maze(File mazeFile){
 		
 		player = new Player(new Coord(2, 2), this);
-		
-		buildMap();
-		
-		
-		
+		this.mazeFile = mazeFile;
+		buildmaze();
 	}
 	
-	public void getMapFiles(){
-		File folder = new File("maps");
-		mapFileArray = folder.listFiles();
-	}
-	
-	public void buildMap(){
+	public void buildmaze(){
 		
-		System.out.println("Current Map is: " + currentFile);
 		
-		ArrayList<ArrayList<Integer>> mapLoadingArray = new ArrayList<ArrayList<Integer>>();
+		
+		ArrayList<ArrayList<Integer>> mazeLoadingArray = new ArrayList<ArrayList<Integer>>();
 		
 		try {
 			
-			File mapFile = mapFileArray[currentFile];
-			Scanner mapScanner = new Scanner(mapFile);
+			Scanner mazeScanner = new Scanner(mazeFile);
 			
 			int y = 0;
-			while(mapScanner.hasNextLine()){
+			while(mazeScanner.hasNextLine()){
 				
-				String mapLine = mapScanner.nextLine();
-				ArrayList<Integer> mapLineArray = new ArrayList<Integer>();
-				for(int x = 0; x < mapLine.length(); x++){
+				String mazeLine = mazeScanner.nextLine();
+				ArrayList<Integer> mazeLineArray = new ArrayList<Integer>();
+				for(int x = 0; x < mazeLine.length(); x++){
 					
-					if(Integer.parseInt(String.valueOf(mapLine.charAt(x))) == 2){
-						mapEntrance = new Coord(x, y);
-					}else if(Integer.parseInt(String.valueOf(mapLine.charAt(x))) == 3){
-						mapExit = new Coord(x, y);
+					if(Integer.parseInt(String.valueOf(mazeLine.charAt(x))) == 2){
+						mazeEntrance = new Coord(x, y);
+					}else if(Integer.parseInt(String.valueOf(mazeLine.charAt(x))) == 3){
+						mazeExit = new Coord(x, y);
 					}
 					// Get character at x, convert it to a string, convert that string to an int
-					mapLineArray.add(Integer.parseInt(String.valueOf(mapLine.charAt(x)))); 
+					mazeLineArray.add(Integer.parseInt(String.valueOf(mazeLine.charAt(x)))); 
 				}
-				mapLoadingArray.add(mapLineArray);
+				mazeLoadingArray.add(mazeLineArray);
 				y++;
 			}
 		} catch (FileNotFoundException e) {
@@ -72,56 +58,27 @@ public class Maze {
 			e.printStackTrace();
 		}
 		
-		mapLengthY = mapLoadingArray.size();
-		mapLengthX = mapLoadingArray.get(0).size();
+		mazeLengthY = mazeLoadingArray.size();
+		mazeLengthX = mazeLoadingArray.get(0).size();
 		
-		player.setPos(mapEntrance);
+		player.setPos(mazeEntrance);
 		
-		this.mapArray = mapLoadingArray;
+		this.mazeArray = mazeLoadingArray;
 		
-	}
-	
-	public int numberOfMaps(){
-		return mapFileArray.length;
-	}
-	
-	public void setCurrentMap(int mapNumber){
-		if(mapNumber >= 0 && mapNumber < numberOfMaps()){
-			this.currentFile = mapNumber;
-			buildMap();
-		}
-	}
-	
-	public void nextMap(){
-		if((currentFile + 1) < numberOfMaps()){
-			this.currentFile++;
-			buildMap();
-		}
-	}
-	
-	public void previousMap(){
-		if((currentFile - 1) >= 0){
-			this.currentFile--;
-			buildMap();
-		}
-	}
-	
-	public boolean isLastMap(){
-		return (currentFile == (numberOfMaps() - 1));
 	}
 	
 	public boolean isOpen(Coord pos){
 		
-		return (this.mapArray.get(pos.getY()).get(pos.getX()) != 1);
+		return (this.mazeArray.get(pos.getY()).get(pos.getX()) != 1);
 		
 	}
 	
 	public int getLengthX(){
-		return this.mapLengthX;
+		return this.mazeLengthX;
 	}
 	
 	public int getLengthY(){
-		return this.mapLengthY;
+		return this.mazeLengthY;
 	}
 	
 	public Player getPlayer(){
@@ -129,11 +86,11 @@ public class Maze {
 	}
 	
 	public Coord getEntrance(){
-		return this.mapEntrance;
+		return this.mazeEntrance;
 	}
 	
 	public Coord getExit(){
-		return this.mapExit;
+		return this.mazeExit;
 	}
 	
 }

@@ -4,21 +4,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 
 import javax.swing.*;
 
 public class Game implements KeyListener {
 
-	private JTextArea context;
-	private Maze maze;
-	private Player player;
-	
-	private int SCREEN_X = 17;
-	private int SCREEN_Y = 9;
-	private int screenOffsetX;
-	private int screenOffsetY;
-	
+	private JTextArea context;;
 	private Boolean gameOver = false;
+	
+	private File[] mazeFileArray;
+	private int mazeNumber;
 	
 	public Game(){
 		
@@ -28,72 +24,49 @@ public class Game implements KeyListener {
 		
 		context = new JTextArea();
         context.addKeyListener(this);
-        Font font = new Font("monospaced", Font.PLAIN, 40);
-        context.setFont(font);
+        context.setFont(new Font("monospaced", Font.PLAIN, 40));
         frame.add(context);
-		
-		maze = new Maze();
-		maze.buildMap();
-		
-		player = maze.getPlayer();
 		
 		frame.pack();
         frame.setVisible(true);
+        
+        getMazeFiles();
+        mazeNumber = 0;
 		
-		printScreen();
-		
+		context.setText("Press G to start game!");
 	}
 	
-	public void printScreen(){
-		
-		// Move screen to player
-		if(player.getPos().getX() < SCREEN_X/2){
-			screenOffsetX = 0;
-		}else if(player.getPos().getX() < (maze.getLengthX() - (SCREEN_X/2))){
-			screenOffsetX = player.getPos().getX() - (SCREEN_X/2);
-		}else{
-			screenOffsetX = maze.getLengthX() - SCREEN_X;
-		}
-		if(player.getPos().getY() < SCREEN_Y/2){
-			screenOffsetY = 0;
-		}else if(player.getPos().getY() < (maze.getLengthY() - (SCREEN_Y/2))){
-			screenOffsetY = player.getPos().getY() - (SCREEN_Y/2);
-		}else{
-			screenOffsetY = maze.getLengthY() - SCREEN_Y;
-		}
-		
-		String screenString = "";
-		
-		for(int y = 0; y < maze.getLengthY(); y++){
-			for(int x = 0; x < maze.getLengthX(); x++){
-				
-				// Only print if inside screen
-				if((x >= screenOffsetX && x < (screenOffsetX + SCREEN_X)) && 
-						(y >= screenOffsetY && y < (screenOffsetY + SCREEN_Y))){
-					Coord currentPos = new Coord(x, y);
-					if(player.getPos().equals(currentPos)){
-						screenString += " G";
-					}else if(maze.getEntrance().equals(currentPos)){
-						screenString += " F";
-					}else if(maze.getExit().equals(currentPos)){
-						screenString += " E";
-					}else if(maze.isOpen(currentPos)){
-						screenString += "  ";
-					}else{
-						screenString += " #";
-					}
-				}
-				
-			}
-			// Only print if inside screen
-			if((y >= screenOffsetY && y < (screenOffsetY + SCREEN_Y))){
-				screenString +="\n";
-			}
-		}
-		
-		
-		context.setText(screenString);
+	public void startMazeLevel(int mazeNumber){
+		 MazeLevel level = new MazeLevel(this, mazeFileArray[mazeNumber]);
+		 System.out.println("Current Map is: " + mazeNumber);
 	}
+	
+	public void getMazeFiles(){
+		File folder = new File("maps");
+		mazeFileArray = folder.listFiles();
+	}
+	
+	public void previousMazeLevel(){
+		if(mazeNumber - 1 > 0){
+			this.mazeNumber--;
+			startMazeLevel(mazeNumber);
+		}
+	}
+	
+	public void nextMazeLevel(){
+		if(mazeNumber + 1 < mazeFileArray.length){
+			this.mazeNumber++;
+			startMazeLevel(mazeNumber);
+		}else{
+			// Last level, end game
+			context.setText("Game over press G to play again!");
+		}
+	}
+	
+	public JTextArea getContext(){
+		return this.context;
+	}
+	
 	
 	public void print(String str){
 		System.out.print(str);
@@ -112,36 +85,9 @@ public class Game implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent key) {
 		// Handle user input
-		if(key.getKeyChar() == 'w'){
-			player.move(0, -1);
-			printScreen();
-		}else if(key.getKeyChar() == 'a'){
-			player.move(-1, 0);
-			printScreen();
-		}else if(key.getKeyChar() == 's'){
-			player.move(0, 1);
-			printScreen();
-		}else if(key.getKeyChar() == 'd'){
-			player.move(1, 0);
-			printScreen();
-		}else if(key.getKeyChar() == 'q'){
-			maze.previousMap();
-			printScreen();
-		}else if(key.getKeyChar() == 'e'){
-			maze.nextMap();
-			printScreen();
+		if(Character.toLowerCase(key.getKeyChar()) == 'g'){
+			startMazeLevel(mazeNumber);
 		}
-		
-		// Go to next map on exit
-		if(player.getPos().equals(maze.getExit())){
-			if(maze.isLastMap()){
-				context.setText("You win");
-			}else{
-				maze.nextMap();
-				printScreen();
-			}
-		}
-		
 	}
 
 	@Override
