@@ -15,13 +15,21 @@ public class Maze {
 	private int mapLengthX;
 	private int mapLengthY;
 	
+	private Player player;
+	private Coord mapEntrance;
+	private Coord mapExit;
+	
 	
 	public Maze(){
 		
 		getMapFiles();
 		currentFile = 0;
 		
+		player = new Player(new Coord(2, 2), this);
+		
 		buildMap();
+		
+		
 		
 	}
 	
@@ -41,16 +49,23 @@ public class Maze {
 			File mapFile = mapFileArray[currentFile];
 			Scanner mapScanner = new Scanner(mapFile);
 			
+			int y = 0;
 			while(mapScanner.hasNextLine()){
 				
 				String mapLine = mapScanner.nextLine();
 				ArrayList<Integer> mapLineArray = new ArrayList<Integer>();
 				for(int x = 0; x < mapLine.length(); x++){
+					
+					if(Integer.parseInt(String.valueOf(mapLine.charAt(x))) == 2){
+						mapEntrance = new Coord(x, y);
+					}else if(Integer.parseInt(String.valueOf(mapLine.charAt(x))) == 3){
+						mapExit = new Coord(x, y);
+					}
 					// Get character at x, convert it to a string, convert that string to an int
 					mapLineArray.add(Integer.parseInt(String.valueOf(mapLine.charAt(x)))); 
 				}
 				mapLoadingArray.add(mapLineArray);
-				
+				y++;
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -59,6 +74,8 @@ public class Maze {
 		
 		mapLengthY = mapLoadingArray.size();
 		mapLengthX = mapLoadingArray.get(0).size();
+		
+		player.setPos(mapEntrance);
 		
 		this.mapArray = mapLoadingArray;
 		
@@ -89,9 +106,13 @@ public class Maze {
 		}
 	}
 	
-	public boolean isOpen(int x, int y){
+	public boolean isLastMap(){
+		return (currentFile == (numberOfMaps() - 1));
+	}
+	
+	public boolean isOpen(Coord pos){
 		
-		return (this.mapArray.get(y).get(x) == 0);
+		return (this.mapArray.get(pos.getY()).get(pos.getX()) != 1);
 		
 	}
 	
@@ -101,6 +122,18 @@ public class Maze {
 	
 	public int getLengthY(){
 		return this.mapLengthY;
+	}
+	
+	public Player getPlayer(){
+		return this.player;
+	}
+	
+	public Coord getEntrance(){
+		return this.mapEntrance;
+	}
+	
+	public Coord getExit(){
+		return this.mapExit;
 	}
 	
 }

@@ -9,15 +9,22 @@ import javax.swing.*;
 
 public class Game implements KeyListener {
 
-	JTextArea context;
+	private JTextArea context;
 	private Maze maze;
 	private Player player;
+	
+	private int SCREEN_X = 17;
+	private int SCREEN_Y = 9;
+	private int screenOffsetX;
+	private int screenOffsetY;
+	
+	private Boolean gameOver = false;
 	
 	public Game(){
 		
 		JFrame frame = new JFrame("MazeGame");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 530));
+        frame.setPreferredSize(new Dimension(850, 530));
 		
 		context = new JTextArea();
         context.addKeyListener(this);
@@ -28,7 +35,7 @@ public class Game implements KeyListener {
 		maze = new Maze();
 		maze.buildMap();
 		
-		player = new Player(new Coord(2, 2), maze);
+		player = maze.getPlayer();
 		
 		frame.pack();
         frame.setVisible(true);
@@ -39,19 +46,49 @@ public class Game implements KeyListener {
 	
 	public void printScreen(){
 		
+		// Move screen to player
+		if(player.getPos().getX() < SCREEN_X/2){
+			screenOffsetX = 0;
+		}else if(player.getPos().getX() < (maze.getLengthX() - (SCREEN_X/2))){
+			screenOffsetX = player.getPos().getX() - (SCREEN_X/2);
+		}else{
+			screenOffsetX = maze.getLengthX() - SCREEN_X;
+		}
+		if(player.getPos().getY() < SCREEN_Y/2){
+			screenOffsetY = 0;
+		}else if(player.getPos().getY() < (maze.getLengthY() - (SCREEN_Y/2))){
+			screenOffsetY = player.getPos().getY() - (SCREEN_Y/2);
+		}else{
+			screenOffsetY = maze.getLengthY() - SCREEN_Y;
+		}
+		
 		String screenString = "";
 		
 		for(int y = 0; y < maze.getLengthY(); y++){
 			for(int x = 0; x < maze.getLengthX(); x++){
-				if(player.getPos().equals(new Coord(x, y))){
-					screenString += " G";
-				}else if(maze.isOpen(x, y)){
-					screenString += "  ";
-				}else{
-					screenString += " #";
+				
+				// Only print if inside screen
+				if((x >= screenOffsetX && x < (screenOffsetX + SCREEN_X)) && 
+						(y >= screenOffsetY && y < (screenOffsetY + SCREEN_Y))){
+					Coord currentPos = new Coord(x, y);
+					if(player.getPos().equals(currentPos)){
+						screenString += " G";
+					}else if(maze.getEntrance().equals(currentPos)){
+						screenString += " F";
+					}else if(maze.getExit().equals(currentPos)){
+						screenString += " E";
+					}else if(maze.isOpen(currentPos)){
+						screenString += "  ";
+					}else{
+						screenString += " #";
+					}
 				}
+				
 			}
-			screenString +="\n";
+			// Only print if inside screen
+			if((y >= screenOffsetY && y < (screenOffsetY + SCREEN_Y))){
+				screenString +="\n";
+			}
 		}
 		
 		
@@ -74,7 +111,7 @@ public class Game implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent key) {
-		// TODO Auto-generated method stub
+		// Handle user input
 		if(key.getKeyChar() == 'w'){
 			player.move(0, -1);
 			printScreen();
@@ -93,6 +130,16 @@ public class Game implements KeyListener {
 		}else if(key.getKeyChar() == 'e'){
 			maze.nextMap();
 			printScreen();
+		}
+		
+		// Go to next map on exit
+		if(player.getPos().equals(maze.getExit())){
+			if(maze.isLastMap()){
+				context.setText("You win");
+			}else{
+				maze.nextMap();
+				printScreen();
+			}
 		}
 		
 	}

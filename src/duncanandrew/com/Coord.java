@@ -28,5 +28,9 @@ public class Coord {
 	public boolean equals(Coord other){
 		return (other.getX() == this.x) && (other.getY() == this.y);
 	}
+	
+	public String toString(){
+		return "x: " + x + ", y: " + y;
+	}
 
 }
