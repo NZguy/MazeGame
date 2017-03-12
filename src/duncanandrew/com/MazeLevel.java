@@ -36,6 +36,12 @@ public class MazeLevel implements KeyListener {
 		
 	}
 	
+	public void openLevel(){
+		game.getContext().addKeyListener(this);
+        game.getContext().setFont(new Font("monospaced", Font.PLAIN, 40));
+        printScreen();
+	}
+	
 	public void printScreen(){
 		
 		// Move screen to player
@@ -69,6 +75,8 @@ public class MazeLevel implements KeyListener {
 						screenString += " F";
 					}else if(maze.getExit().equals(currentPos)){
 						screenString += " E";
+					}else if(maze.isEncounter(currentPos)){
+						screenString += " B";
 					}else if(maze.isOpen(currentPos)){
 						screenString += "  ";
 					}else{
@@ -118,6 +126,9 @@ public class MazeLevel implements KeyListener {
 		if(player.getPos().equals(maze.getExit())){
 			game.getContext().removeKeyListener(this);
 			game.nextMazeLevel();
+		}else if(maze.isEncounter(player.getPos())){
+			game.getContext().removeKeyListener(this);
+			game.startEncounterLevel();
 		}
 	}
 

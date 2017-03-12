@@ -96,4 +96,8 @@ public class Maze {
 		return this.mazeExit;
 	}
 	
+	public boolean isEncounter(Coord pos){
+		return (this.mazeArray.get(pos.getY()).get(pos.getX()) == 4);
+	}
+	
 }

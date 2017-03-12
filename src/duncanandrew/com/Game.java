@@ -15,6 +15,7 @@ public class Game implements KeyListener {
 	
 	private File[] mazeFileArray;
 	private int mazeNumber;
+	private MazeLevel currentMazeLevel;
 	
 	public Game(){
 		
@@ -37,7 +38,7 @@ public class Game implements KeyListener {
 	}
 	
 	public void startMazeLevel(int mazeNumber){
-		 MazeLevel level = new MazeLevel(this, mazeFileArray[mazeNumber]);
+		 this.currentMazeLevel = new MazeLevel(this, mazeFileArray[mazeNumber]);
 		 System.out.println("Current Maze is: " + mazeNumber);
 	}
 	
@@ -61,6 +62,14 @@ public class Game implements KeyListener {
 			// Last level, end game
 			context.setText("Game over press G to play again!");
 		}
+	}
+	
+	public void startEncounterLevel(){
+		EncounterLevel encounter = new EncounterLevel(this, 0);
+	}
+	
+	public void backToMazeLevel(){
+		currentMazeLevel.openLevel();
 	}
 	
 	public JTextArea getContext(){
